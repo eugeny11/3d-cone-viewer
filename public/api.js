@@ -2,7 +2,7 @@ function sendCodeData(coneData) {
   return fetch("api/coneData", {
     method: "POST",
     headers: {
-      "Content-type": "application-json",
+      "Content-type": "application/json",
     },
     body: JSON.stringify(coneData),
   })

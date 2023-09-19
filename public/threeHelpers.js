@@ -1,6 +1,6 @@
-import * as THREE from "three";
+import { OrbitControls } from "./OrbitControls";
 
-let scene, camera, renderer;
+let scene, camera, renderer, controls;
 
 function initThreeScene(containerElement) {
   scene = new THREE.Scene();
@@ -10,18 +10,31 @@ function initThreeScene(containerElement) {
   camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
   camera.position.z = 10;
 
-  renderer = new THREE.WebGL1Renderer({ antialias: true });
+  renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(containerElement.clientWidth, containerElement.clientHeight);
   containerElement.appendChild(renderer.domElement);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
   const pointLight = new THREE.PointLight(0xffffff, 1);
-  pointLight.position(5, 5, 5);
+  pointLight.position.set(5, 5, 5);
   scene.add(pointLight);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+
+  const gridHelper = new THREE.GridHelper(10, 10);
+  scene.add(gridHelper);
 }
 
 export { initThreeScene };
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+export { animate };
 
 function computeConeVertices(radius, height, segments) {
   let vertices = [];
@@ -39,18 +52,11 @@ function computeConeVertices(radius, height, segments) {
 }
 
 function createConeGeometry(radius, height, segments) {
-  let geometry = new THREE.Geometry();
-
-  for (let i = 0; i < segments; i++) {
-    geometry.faces.push(new THREE.Face3(0, i, i + 1));
-  }
-
-  geometry.faces.push(new THREE.Face3(0, segments, 1));
-
-  return geometry;
+  return new THREE.ConeGeometry(radius, height, segments);
 }
 
 function drawCone(radius, height, segments) {
+  console.log("Drawing cone with", { radius, height, segments });
   let geometry = createConeGeometry(radius, height, segments);
   let material = new THREE.MeshBasicMaterial({
     color: 0x00ff00,

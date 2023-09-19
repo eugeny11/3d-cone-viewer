@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Cone Viewer</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:,">
 </head>
 <body>
     <div class="container">
@@ -30,10 +31,14 @@
 
     <div id="threeContainer"></div>
 
-    <button id="drawSimpleCone">Draw simple cone</button>
+    <div class="buttons-container">
+        <button id="sendData">Send Cone Data</button>
+        <button id="drawSimpleCone">Draw simple cone</button>
+    </div>
 
+ 
     <script src="https://unpkg.com/three@latest/build/three.js"></script>
-
-    <script src="script.js"></script>
+    <script type="module" src="threeHelpers.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

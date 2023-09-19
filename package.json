@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/eugeny11/3d-cone-viewer#readme",
   "dependencies": {
-    "express": "^4.18.2",
-    "three": "^0.156.1"
+    "express": "^4.18.2"
   }
 }
