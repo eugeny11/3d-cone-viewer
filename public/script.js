@@ -30,7 +30,7 @@ document
   .addEventListener("click", function () {
     let height = parseFloat(document.getElementById("height").value);
     let radius = parseFloat(document.getElementById("radius").value);
-    let segments = parseInt(document.getElementById("segments"));
+    let segments = parseInt(document.getElementById("segments").value);
 
     drawCone(radius, height, segments);
   });

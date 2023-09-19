@@ -1,4 +1,4 @@
-import { OrbitControls } from "./OrbitControls";
+import { OrbitControls } from "./OrbitControls.js";
 
 let scene, camera, renderer, controls;
 
@@ -7,8 +7,10 @@ function initThreeScene(containerElement) {
 
   const aspectRatio =
     containerElement.clientWidth / containerElement.clientHeight;
+
   camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-  camera.position.z = 10;
+  camera.position.set(0, 10, 10); // Перемещаем камеру выше и немного назад
+  camera.lookAt(0, 0, 0); // Направляем камеру на центр сцены
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(containerElement.clientWidth, containerElement.clientHeight);
@@ -16,14 +18,18 @@ function initThreeScene(containerElement) {
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
+
   const pointLight = new THREE.PointLight(0xffffff, 1);
   pointLight.position.set(5, 5, 5);
   scene.add(pointLight);
 
   controls = new OrbitControls(camera, renderer.domElement);
+  controls.minDistance = 5;
+  controls.maxDistance = 50;
   controls.update();
 
   const gridHelper = new THREE.GridHelper(10, 10);
+  gridHelper.position.y = -5;
   scene.add(gridHelper);
 }
 
@@ -63,6 +69,16 @@ function drawCone(radius, height, segments) {
     wireframe: true,
   });
   let coneMesh = new THREE.Mesh(geometry, material);
+
+  let scale = 1;
+
+  if (radius > 5 || height > 5) {
+    scale = (5 / Math.max(radius, height)) * 3;
+    coneMesh.scale.set(scale, scale, scale);
+  }
+
+  let scaledHeight = height * scale;
+  coneMesh.position.set(0, scaledHeight / 6, 0);
 
   scene.add(coneMesh);
 }

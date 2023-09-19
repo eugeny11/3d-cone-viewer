@@ -1,16 +1,3 @@
-import {
-  EventDispatcher,
-  MOUSE,
-  Quaternion,
-  Spherical,
-  TOUCH,
-  Vector2,
-  Vector3,
-  Plane,
-  Ray,
-  MathUtils,
-} from "three";
-
 // OrbitControls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
 //
@@ -21,11 +8,11 @@ import {
 const _changeEvent = { type: "change" };
 const _startEvent = { type: "start" };
 const _endEvent = { type: "end" };
-const _ray = new Ray();
-const _plane = new Plane();
-const TILT_LIMIT = Math.cos(70 * MathUtils.DEG2RAD);
+const _ray = new THREE.Ray(); // Используем THREE.Ray
+const _plane = new THREE.Plane(); // Используем THREE.Plane
+const TILT_LIMIT = Math.cos(70 * THREE.MathUtils.DEG2RAD);
 
-class OrbitControls extends EventDispatcher {
+class OrbitControls extends THREE.EventDispatcher {
   constructor(object, domElement) {
     super();
 
@@ -37,7 +24,7 @@ class OrbitControls extends EventDispatcher {
     this.enabled = true;
 
     // "target" sets the location of focus, where the object orbits around
-    this.target = new Vector3();
+    this.target = new THREE.Vector3();
 
     // How far you can dolly in and out ( PerspectiveCamera only )
     this.minDistance = 0;
@@ -93,13 +80,13 @@ class OrbitControls extends EventDispatcher {
 
     // Mouse buttons
     this.mouseButtons = {
-      LEFT: MOUSE.ROTATE,
-      MIDDLE: MOUSE.DOLLY,
-      RIGHT: MOUSE.PAN,
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN,
     };
 
     // Touch fingers
-    this.touches = { ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN };
+    this.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
 
     // for reset
     this.target0 = this.target.clone();
@@ -156,18 +143,18 @@ class OrbitControls extends EventDispatcher {
 
     // this method is exposed, but perhaps it would be better if we can make it private...
     this.update = (function () {
-      const offset = new Vector3();
+      const offset = new THREE.Vector3();
 
       // so camera.up is the orbit axis
-      const quat = new Quaternion().setFromUnitVectors(
+      const quat = new THREE.Quaternion().setFromUnitVectors(
         object.up,
-        new Vector3(0, 1, 0)
+        new THREE.Vector3(0, 1, 0)
       );
       const quatInverse = quat.clone().invert();
 
-      const lastPosition = new Vector3();
-      const lastQuaternion = new Quaternion();
-      const lastTargetPosition = new Vector3();
+      const lastPosition = new THREE.Vector3();
+      const lastQuaternion = new THREE.Quaternion();
+      const lastTargetPosition = new THREE.Vector3();
 
       const twoPI = 2 * Math.PI;
 
@@ -408,26 +395,26 @@ class OrbitControls extends EventDispatcher {
     const EPS = 0.000001;
 
     // current position in spherical coordinates
-    const spherical = new Spherical();
-    const sphericalDelta = new Spherical();
+    const spherical = new THREE.Spherical();
+    const sphericalDelta = new THREE.Spherical();
 
     let scale = 1;
-    const panOffset = new Vector3();
+    const panOffset = new THREE.Vector3();
 
-    const rotateStart = new Vector2();
-    const rotateEnd = new Vector2();
-    const rotateDelta = new Vector2();
+    const rotateStart = new THREE.Vector2();
+    const rotateEnd = new THREE.Vector2();
+    const rotateDelta = new THREE.Vector2();
 
-    const panStart = new Vector2();
-    const panEnd = new Vector2();
-    const panDelta = new Vector2();
+    const panStart = new THREE.Vector2();
+    const panEnd = new THREE.Vector2();
+    const panDelta = new THREE.Vector2();
 
-    const dollyStart = new Vector2();
-    const dollyEnd = new Vector2();
-    const dollyDelta = new Vector2();
+    const dollyStart = new THREE.Vector2();
+    const dollyEnd = new THREE.Vector2();
+    const dollyDelta = new THREE.Vector2();
 
-    const dollyDirection = new Vector3();
-    const mouse = new Vector2();
+    const dollyDirection = new THREE.Vector3();
+    const mouse = new THREE.Vector2();
     let performCursorZoom = false;
 
     const pointers = [];
@@ -454,7 +441,7 @@ class OrbitControls extends EventDispatcher {
     }
 
     const panLeft = (function () {
-      const v = new Vector3();
+      const v = new THREE.Vector3();
 
       return function panLeft(distance, objectMatrix) {
         v.setFromMatrixColumn(objectMatrix, 0); // get X column of objectMatrix
@@ -465,7 +452,7 @@ class OrbitControls extends EventDispatcher {
     })();
 
     const panUp = (function () {
-      const v = new Vector3();
+      const v = new THREE.Vector3();
 
       return function panUp(distance, objectMatrix) {
         if (scope.screenSpacePanning === true) {
@@ -483,7 +470,7 @@ class OrbitControls extends EventDispatcher {
 
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (function () {
-      const offset = new Vector3();
+      const offset = new THREE.Vector3();
 
       return function pan(deltaX, deltaY) {
         const element = scope.domElement;
@@ -910,7 +897,7 @@ class OrbitControls extends EventDispatcher {
       }
 
       switch (mouseAction) {
-        case MOUSE.DOLLY:
+        case THREE.MOUSE.DOLLY:
           if (scope.enableZoom === false) return;
 
           handleMouseDownDolly(event);
@@ -919,7 +906,7 @@ class OrbitControls extends EventDispatcher {
 
           break;
 
-        case MOUSE.ROTATE:
+        case THREE.MOUSE.ROTATE:
           if (event.ctrlKey || event.metaKey || event.shiftKey) {
             if (scope.enablePan === false) return;
 
