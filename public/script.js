@@ -1,4 +1,5 @@
 import { initThreeScene } from "./threeHelpers";
+import { drawCone } from "./threeHelpers";
 
 document
   .getElementById("coneForm")
@@ -15,3 +16,13 @@ document
 const threeContainer = document.getElementById("threeContainer");
 
 initThreeScene(threeContainer);
+
+document
+  .getElementById("drawSimpleCone")
+  .addEventListener("click", function () {
+    let height = parseFloat(document.getElementById("height").value);
+    let radius = parseFloat(document.getElementById("radius").value);
+    let segments = parseInt(document.getElementById("segments"));
+
+    drawCone(radius, height, segments);
+  });

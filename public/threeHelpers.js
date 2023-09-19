@@ -60,3 +60,5 @@ function drawCone(radius, height, segments) {
 
   scene.add(coneMesh);
 }
+
+export { drawCone };
