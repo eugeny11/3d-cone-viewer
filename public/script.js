@@ -1,4 +1,9 @@
-import { initThreeScene, drawCone, animate } from "./threeHelpers.js";
+import {
+  initThreeScene,
+  animate,
+  drawCone,
+  drawSmoothCone,
+} from "./threeHelpers.js";
 import { sendCodeData } from "./api.js";
 
 const threeContainer = document.getElementById("threeContainer");
@@ -38,11 +43,9 @@ document
 document
   .getElementById("drawSmoothConeButton")
   .addEventListener("click", function () {
-    const existingCone = scene.getObjectByName("cone");
-    if (existingCone) {
-      scene.remove(existingCone);
-    }
+    let height = parseFloat(document.getElementById("height").value);
+    let radius = parseFloat(document.getElementById("radius").value);
+    let segments = parseInt(document.getElementById("segments").value);
 
-    const coneMesh = drawSmoothCone(5, 10, 32);
-    coneMesh.name = "cone";
+    drawSmoothCone(radius, height, segments);
   });

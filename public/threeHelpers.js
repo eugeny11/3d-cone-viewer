@@ -42,7 +42,7 @@ function animate() {
 
 export { animate };
 
-function computeConeVertices(radius, height, segments) {
+/* function computeConeVertices(radius, height, segments) {
   let vertices = [];
 
   vertices.push(new THREE.Vector3(0, 0, height));
@@ -55,14 +55,23 @@ function computeConeVertices(radius, height, segments) {
   }
 
   return vertices;
-}
+} */
 
 function createConeGeometry(radius, height, segments) {
   return new THREE.ConeGeometry(radius, height, segments);
 }
 
+let currentConeMesh = null;
+
 function drawCone(radius, height, segments) {
   console.log("Drawing cone with", { radius, height, segments });
+
+  if (currentConeMesh) {
+    scene.remove(currentConeMesh);
+    currentConeMesh.geometry.dispose();
+    currentConeMesh.material.dispose();
+  }
+
   let geometry = createConeGeometry(radius, height, segments);
   let material = new THREE.MeshBasicMaterial({
     color: 0x00ff00,
@@ -71,7 +80,6 @@ function drawCone(radius, height, segments) {
   let coneMesh = new THREE.Mesh(geometry, material);
 
   let scale = 1;
-
   if (radius > 5 || height > 5) {
     scale = (5 / Math.max(radius, height)) * 3;
     coneMesh.scale.set(scale, scale, scale);
@@ -81,6 +89,8 @@ function drawCone(radius, height, segments) {
   coneMesh.position.set(0, scaledHeight / 6, 0);
 
   scene.add(coneMesh);
+
+  currentConeMesh = coneMesh;
 }
 
 export { drawCone };
@@ -92,7 +102,7 @@ function computeNormals(Pi, B) {
 
 function computeConeNormals(radius, height, segments) {
   const B = new THREE.Vector3(0, 0, -Math.pow(radius, 2) / height);
-  const vertices = computeConeVertices(radius, height, segments);
+  const vertices = computeSmoothConeVertices(radius, height, segments);
   const normals = [];
 
   for (let i = 0; i < vertices.length; i++) {
@@ -102,10 +112,40 @@ function computeConeNormals(radius, height, segments) {
   return normals;
 }
 
+function computeSmoothConeVertices(radius, height, segments) {
+  const vertices = [];
+
+  vertices.push(new THREE.Vector3(0, 0, 0));
+
+  for (let i = 0; i <= segments; i++) {
+    const theta = (i / segments) * 2 * Math.PI;
+    const x = radius * Math.cos(theta);
+    const y = radius * Math.sin(theta);
+    vertices.push(new THREE.Vector3(x, y, 0));
+  }
+
+  vertices.push(new THREE.Vector3(0, 0, height));
+
+  return vertices;
+}
+
 function createSmoothConeGeometry(radius, height, segments) {
   const geometry = new THREE.BufferGeometry();
-  const vertices = computeConeVertices(radius, height, segments);
+
+  const vertices = computeSmoothConeVertices(radius, height, segments);
+
   const normals = computeConeNormals(radius, height, segments);
+
+  const indices = [];
+
+  for (let i = 1; i <= segments; i++) {
+    indices.push(0, i, i + 1);
+
+    indices.push(i, vertices.length - 1, i + 1);
+  }
+
+  indices.push(0, segments, 1);
+  indices.push(segments, vertices.length - 1, 1);
 
   const flattenedVertices = [];
   const flattenedNormals = [];
@@ -124,31 +164,37 @@ function createSmoothConeGeometry(radius, height, segments) {
     new THREE.Float32BufferAttribute(flattenedNormals, 3)
   );
 
-  for (let i = 0; i < segments; i++) {
-    geometry.index.push(0, i, i + 1);
-
-    geometry.index.push(i, i + 1, segments + 1);
-  }
+  geometry.setIndex(indices);
 
   return geometry;
 }
 
 function drawSmoothCone(radius, height, segments) {
+  if (currentConeMesh) {
+    scene.remove(currentConeMesh);
+    currentConeMesh.geometry.dispose();
+    currentConeMesh.material.dispose();
+  }
+  console.log("Drawing smooth cone with", { radius, height, segments });
   const geometry = createSmoothConeGeometry(radius, height, segments);
   const material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,
     flatShading: false,
   });
   const coneMesh = new THREE.Mesh(geometry, material);
+
   let scale = 1;
   if (radius > 5 || height > 5) {
-    scale = (5 / Math.max(radius, height)) * 2;
+    scale = (5 / Math.max(radius, height)) * 3;
     coneMesh.scale.set(scale, scale, scale);
   }
 
-  coneMesh.position.set(0, (height * scale) / 2, 0);
+  coneMesh.rotation.x = -Math.PI / 2;
+  coneMesh.position.set(0, -5, 0);
 
   scene.add(coneMesh);
+
+  currentConeMesh = coneMesh;
 }
 
 export { drawSmoothCone };
