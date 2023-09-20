@@ -10,8 +10,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Предполагая, что вы хотите, чтобы контейнер занимал всю высоту экрана */
-    width: 100vw; /* Предполагая, что вы хотите, чтобы контейнер занимал всю ширину экрана */
+    height: 100vh;
+    width: 100vw;
     overflow: hidden;
 }
 
@@ -66,7 +66,7 @@ button:hover {
 }
 
 #threeContainer {
-    width: 50%; /* Вы можете установить нужные вам значения */
+    width: 50%;
     height: 50%;
-    border: 1px solid #ddd; /* Опциональная рамка для визуализации границ контейнера */
+    border: 1px solid #ddd;
 }
