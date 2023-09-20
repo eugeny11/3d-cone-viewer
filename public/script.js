@@ -34,3 +34,15 @@ document
 
     drawCone(radius, height, segments);
   });
+
+document
+  .getElementById("drawSmoothConeButton")
+  .addEventListener("click", function () {
+    const existingCone = scene.getObjectByName("cone");
+    if (existingCone) {
+      scene.remove(existingCone);
+    }
+
+    const coneMesh = drawSmoothCone(5, 10, 32);
+    coneMesh.name = "cone";
+  });

@@ -84,3 +84,71 @@ function drawCone(radius, height, segments) {
 }
 
 export { drawCone };
+
+function computeNormals(Pi, B) {
+  let Ni = Pi.clone().sub(B);
+  return Ni.normalize();
+}
+
+function computeConeNormals(radius, height, segments) {
+  const B = new THREE.Vector3(0, 0, -Math.pow(radius, 2) / height);
+  const vertices = computeConeVertices(radius, height, segments);
+  const normals = [];
+
+  for (let i = 0; i < vertices.length; i++) {
+    normals.push(computeNormals(vertices[i], B));
+  }
+
+  return normals;
+}
+
+function createSmoothConeGeometry(radius, height, segments) {
+  const geometry = new THREE.BufferGeometry();
+  const vertices = computeConeVertices(radius, height, segments);
+  const normals = computeConeNormals(radius, height, segments);
+
+  const flattenedVertices = [];
+  const flattenedNormals = [];
+
+  for (let i = 0; i < vertices.length; i++) {
+    flattenedVertices.push(vertices[i].x, vertices[i].y, vertices[i].z);
+    flattenedNormals.push(normals[i].x, normals[i].y, normals[i].z);
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(flattenedVertices, 3)
+  );
+  geometry.setAttribute(
+    "normal",
+    new THREE.Float32BufferAttribute(flattenedNormals, 3)
+  );
+
+  for (let i = 0; i < segments; i++) {
+    geometry.index.push(0, i, i + 1);
+
+    geometry.index.push(i, i + 1, segments + 1);
+  }
+
+  return geometry;
+}
+
+function drawSmoothCone(radius, height, segments) {
+  const geometry = createSmoothConeGeometry(radius, height, segments);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    flatShading: false,
+  });
+  const coneMesh = new THREE.Mesh(geometry, material);
+  let scale = 1;
+  if (radius > 5 || height > 5) {
+    scale = (5 / Math.max(radius, height)) * 2;
+    coneMesh.scale.set(scale, scale, scale);
+  }
+
+  coneMesh.position.set(0, (height * scale) / 2, 0);
+
+  scene.add(coneMesh);
+}
+
+export { drawSmoothCone };
